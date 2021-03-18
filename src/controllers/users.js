@@ -93,12 +93,13 @@ module.exports = {
   },
 
   inputReferral: (req, res) => {
-    const { body } = req;
+    const { ref_code } = req.body;
+    const id = req.decodedToken.id;
     userModel
-      .inputReferral(body)
-      .then((data) => {
-        console.log("CNS", data);
-        form.success(res, "Input referral success", data, 200);
+      .inputReferral(id, ref_code)
+      .then(() => {
+        // console.log("CNS", data);
+        form.success(res, "Input referral success", "1", 200);
       })
       .catch((err) => {
         console.log("CNS", err);
@@ -147,7 +148,7 @@ module.exports = {
             form.success(res, "Search Success", data, 200);
           })
           .catch(() => {
-            form.success(res, "Search Failed", `${name} not found`, 404);
+            form.error(res, "Search Failed", `${name} not found`, 404);
           });
       })
       .catch((err) => {

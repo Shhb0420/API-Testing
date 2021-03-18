@@ -41,29 +41,20 @@ module.exports = {
     });
   },
 
-  inputReferral: (body) => {
+  inputReferral: (id, ref_code) => {
     return new Promise((resolve, reject) => {
-      const { referral_code } = body;
-      const checkReferralCode = "SELECT referral_code FROM users";
-      db.query(checkReferralCode, referral_code, (err, result) => {
-        if (!result[0]) {
-          console.log("dadada", result);
-          reject("Referral code not found");
+      const body = {
+        id: id,
+        ref_code: ref_code,
+      };
+      const qs = "INSERT INTO users (ref_code) VALUES ?";
+      db.query(qs, body, (err, data) => {
+        if (!err) {
+          console.log("data", data);
+          resolve(data);
         } else {
-          const newBody = {
-            ...body,
-            ref_code: referral_code,
-          };
-          const qs = "INSERT INTO users (ref_code) VALUES (?)";
-          db.query(qs, newBody, (err, data) => {
-            if (!err) {
-              console.log("data", data);
-              resolve({ ref_code: body.ref_code });
-            } else {
-              console.log("err", err);
-              reject(err);
-            }
-          });
+          console.log("err", err);
+          reject(err);
         }
       });
     });
@@ -106,8 +97,7 @@ module.exports = {
   },
   totalResult: (addQuery) => {
     return new Promise((resolve, reject) => {
-      const qs =
-        `SELECT count(name) as total_result FROM users ` + addQuery;
+      const qs = `SELECT count(name) as total_result FROM users ` + addQuery;
       db.query(qs, (err, data) => {
         if (!err) {
           resolve(data);
